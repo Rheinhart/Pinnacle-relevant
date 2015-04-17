@@ -1,0 +1,10 @@
+Cash Balance: 15,634.12
+Agent Credit: 550,000.00
+Agent Outstanding: 0.00
+Total Member Active / Closed: 18 / 0
+Total Balance: 1,587,338.84
+User Name: BCYC5X6
+Yesterday Total Balance: 1,587,338.84
+Yesterday Cash Balance: 15,634.12
+Total Outstanding: 0.00
+Total Member Credit: 542,500.00
