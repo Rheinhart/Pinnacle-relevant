@@ -120,8 +120,8 @@ class PinnacleLogin():
 if __name__ == '__main__':
 
     userlogin = PinnacleLogin()
-    username = 'bcyc5x6'
-    password = 'qqqq1111'
+    username = ''
+    password = ''
 
     userlogin.set_login_info(username,password)
     userlogin.login()
