@@ -107,8 +107,6 @@ class PinnacleLogin():
 
     def _getcaptcha(self):
 
-        captcha_url_post = raw_input("Please input the captcha_url：")
-        self.captcha_url = 'https://aaa.pinnaclesports.com/UserControls/CaptchaApp/CaptchaHandler.ashx?cc='+captcha_url_post
         capr = urllib2.urlopen(self.captcha_url)
         with open('C:\\Users\\taoju\\Desktop\\captcha_newmember.png', 'wb') as f:
             f.write(capr.read())
@@ -124,10 +122,15 @@ class PinnacleLogin():
 
         url = 'https://aaa.pinnaclesports.com/Members/NewMember.aspx'
         response = urllib2.urlopen(url)
-        sName = 'C:\\Users\\taoju\\Desktop\\'+'pinnacle_newmember' + '.txt'
-        f = open(sName,'w')
-        f.write(response.read())
-        f.close()
+        str = response.read()
+        #sName = 'C:\\Users\\taoju\\Desktop\\'+'pinnacle_newmember' + '.txt'
+        #f = open(sName,'w')
+        #f.write(str)
+        #f.close()
+        captcha_url_post = re.findall("CaptchaHandler\.ashx\?cc=(.*)\"",str)
+        #print captcha_url_post[0]
+        self.captcha_url = 'https://aaa.pinnaclesports.com/UserControls/CaptchaApp/CaptchaHandler.ashx?cc='+captcha_url_post[0]
+        #captcha_url_post = raw_input("Please input the captcha_url：")
 
     def login(self):
 
