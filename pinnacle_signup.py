@@ -99,7 +99,7 @@ class PinnacleSignUp():
 
     def _getcaptcha(self):
         capr = signup_session.get(self.captcha_url,timeout=60*4)
-        with open('C:\\Users\\taoju\\Desktop\\captcha.png', 'wb') as f:
+        with open('C:\\captcha.png', 'wb') as f:
             f.write(capr.content)
             f.close()
         signup_captcha = raw_input("Please input the captcha：")
