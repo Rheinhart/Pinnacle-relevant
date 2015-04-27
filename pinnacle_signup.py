@@ -132,7 +132,7 @@ if __name__ == '__main__':
     firstname = 'TTTTT'
     surename = 'ccc'
     password = 'qqqq212$'
-    email = 'taojun.li@outlook.com'
+    email = 'abc@outlook.com'
 
     usersignup.set_signup_info(firstname,surename,password,email)
     usersignup.signup()
