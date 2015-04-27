@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import urllib2
 import urllib
-from pytesser import *
+#from pytesser import *
 import requests
 import cookielib
 import sys
@@ -102,38 +102,6 @@ class PinnacleSignUp():
         with open('C:\\Users\\taoju\\Desktop\\captcha.png', 'wb') as f:
             f.write(capr.content)
             f.close()
-        ###获取验证码字串 赋值cap_str
-        image=Image.open('C:\\Users\\taoju\\Desktop\\captcha.png')
-        # prevent IOError: cannot write mode RGBA as BMP
-        r, g, b, a = image.split()
-        image = Image.merge("RGB", (r, g, b))
-        #image.save("C:\\Users\\taoju\\Desktop\\captcha.bmp")
-        imgry = image.convert('L')
-        imgry.save("C:\\Users\\taoju\\Desktop\\captcha.jpg")
-        cap_str = image_to_string(imgry)
-        print cap_str
-
-        threshold = 150
-        table = []
-        for i in range(256):
-            if i < threshold:
-                table.append(0)
-            else:
-                table.append(1)
-        out = imgry.point(table,'1')
-
-        #由于都是数字
-        #对于识别成字母的 采用该表进行修正
-        rep={'O':'0',
-            'I':'1','L':'1','i':'1',
-            'Z':'2',
-            'S':'8'};
-
-        cap_str = image_to_string(out)
-        print cap_str
-        for r in rep:
-            cap_str = cap_str.replace(r,rep[r])
-        print cap_str
         signup_captcha = raw_input("Please input the captcha：")
         print signup_captcha
         self.captcha = signup_captcha
