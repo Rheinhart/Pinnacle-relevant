@@ -136,11 +136,10 @@ class PinnacleLogin():
         getCode = pinnacle_session.get(url,timeout=60*60)
         str = getCode.content
 
-        sName = 'C:\\Users\\taoju\\Desktop\\'+'pinnacle_newmember' + '.txt'
-        f = open(sName,'w')
-        f.write(str)
-        f.close()
-
+        #sName = 'C:\\Users\\taoju\\Desktop\\'+'pinnacle_newmember' + '.txt'
+        #f = open(sName,'w')
+        #f.write(str)
+        #f.close()
         captcha_url_post = re.findall("CaptchaHandler\.ashx\?cc=(.*)\"",str)
         self.captcha_control = captcha_url_post[0]
         self.captcha_url = 'https://aaa.pinnaclesports.com/UserControls/CaptchaApp/CaptchaHandler.ashx?cc='+captcha_url_post[0]
@@ -175,7 +174,7 @@ class PinnacleLogin():
 
         id_first = 0
         id_second = 1
-        id_third = raw_input("Please input the id_third：")
+        id_third = raw_input("Please input the the third member userid token(bcyc5x601:_) ")
 
         newmember_header = {"Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
                   "Accept-Encoding":"gzip, deflate",
