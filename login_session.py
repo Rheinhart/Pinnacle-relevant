@@ -108,7 +108,7 @@ class PinnacleLogin():
 
     def _savedata(self):
         """save the data"""
-        sName = os.path()+'pinnacle_balance' + '.txt'
+        sName = os.getcwd()+'pinnacle_balance' + '.txt'
 
         try:
             f = open(sName,'w')
