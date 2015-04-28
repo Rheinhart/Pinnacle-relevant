@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-import urllib2
-import urllib
-import cookielib
 import sys
 import bs4
 import re
 import requests
 from PIL import Image  #handle the image
+#import urllib2
+#import urllib
+#import cookielib
 import os
 
 ######
