@@ -62,10 +62,7 @@ class PinnacleLogin():
             'LB':'Login'}
 
         req = pinnacle_session.post(login_url, postData,headers=login_header,timeout=60*60)
-        try:
-            content = str(req.content)
-        except  urllib2.HTTPError, e:
-            print e.code
+
 
     def _kickoff(self):
         '''kick off other user and continue'''
@@ -92,10 +89,8 @@ class PinnacleLogin():
         'COB':'Continue'}
 
         req = pinnacle_session.post(kickoff_url, postData,headers=login_header,timeout=60*60)
-        try:
-            self.pinnacle_balance = str(req.content)
-        except  urllib2.HTTPError, e:
-            print e.code
+        self.pinnacle_balance = str(req.content)
+
 
         tag = 'Yesterday Total Balance'
         if  re.search(tag,self.pinnacle_balance):
@@ -119,7 +114,7 @@ class PinnacleLogin():
 
     def _savedata(self):
         """save the data"""
-        sName = 'C:\\Users\\taoju\\Desktop\\'+'pinnacle_balance' + '.txt'
+        sName = os.path()+'pinnacle_balance' + '.txt'
         try:
             f = open(sName,'w')
             for (k,v) in self.balance_sheet.items():
@@ -136,10 +131,6 @@ class PinnacleLogin():
         getCode = pinnacle_session.get(url,timeout=60*60)
         str = getCode.content
 
-        #sName = 'C:\\Users\\taoju\\Desktop\\'+'pinnacle_newmember' + '.txt'
-        #f = open(sName,'w')
-        #f.write(str)
-        #f.close()
         captcha_url_post = re.findall("CaptchaHandler\.ashx\?cc=(.*)\"",str)
         self.captcha_control = captcha_url_post[0]
         self.captcha_url = 'https://aaa.pinnaclesports.com/UserControls/CaptchaApp/CaptchaHandler.ashx?cc='+captcha_url_post[0]
@@ -156,13 +147,13 @@ class PinnacleLogin():
     def _getcaptcha(self):
 
         self._getcaptchaurl()
-
+        captcha_path = os.getcwd()+'\\captcha_newmember.png'
         capr = pinnacle_session.get(self.captcha_url,timeout=60*60)
-        with open('C:\\Users\\taoju\\Desktop\\captcha_newmember.png', 'wb') as f:
+        with open(captcha_path, 'wb') as f:
             f.write(capr.content)
             f.close()
 
-        captcha = Image.open('C:\\Users\\taoju\\Desktop\\captcha_newmember.png')
+        captcha = Image.open(captcha_path)
         captcha.show()
         signup_captcha = raw_input("Please input the captcha：")
         self.captcha = signup_captcha
@@ -486,11 +477,8 @@ class PinnacleLogin():
                     "DXCss":"100_95,1_9,1_11,1_4,100_97,100_241,100_243,/Members/Agent.css,/css/MembersAsianAgentAdminMaster?v=tu_PZM2apLZcVD3qdoCl-sSqyNjWxnJjSUFqvHE5ITQ1"}
 
         req = pinnacle_session.post(newmember_url, postData,headers=newmember_header,timeout=60*60)
-        try:
-            str = req.content
-        except  urllib2.HTTPError, e:
-            print e.code
 
+        str = req.content
         tag = 'Last Login IP'
         if  re.search(tag,str):
             #signup successful
