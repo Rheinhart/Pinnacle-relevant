@@ -93,7 +93,7 @@ class PinnacleLogin():
 
     def _savedata(self):
         """save the data"""
-        sName = 'C:\\'+'pinnacle_balance' + '.txt'
+        sName = os.path()+'pinnacle_balance' + '.txt'
         try:
             f = open(sName,'w')
             for (k,v) in self.balance_sheet.items():
@@ -114,8 +114,8 @@ class PinnacleLogin():
 if __name__ == '__main__':
 
     userlogin = PinnacleLogin()
-    username = ''
-    password = ''
+    username = 'bcyc5x6'
+    password = 'qqqq1111'
 
     userlogin.set_login_info(username,password)
     userlogin.login()
