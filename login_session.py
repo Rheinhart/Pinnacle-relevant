@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-import urllib2
-import urllib
-import cookielib
+#import urllib2
+#import urllib
+#import cookielib
 import sys
 import bs4
 import re
@@ -55,10 +55,6 @@ class PinnacleLogin():
 
         req = login_session.post(login_url, postData,headers=login_header,timeout=60*4)
 
-        try:
-            content = str(req.content)
-        except  urllib2.HTTPError, e:
-            print e.code
 
     def _kickoff(self):
         '''kick off other user and continue'''
@@ -86,10 +82,7 @@ class PinnacleLogin():
         'COB':'Continue'}
 
         req = login_session.post(kickoff_url, postData,headers=login_header,timeout=60*4)
-        try:
-            self.pinnacle_balance = str(req.content)
-        except  urllib2.HTTPError, e:
-            print e.code
+        self.pinnacle_balance = str(req.content)
 
         tag = 'Yesterday Total Balance'
         if  re.search(tag,self.pinnacle_balance):
@@ -115,7 +108,7 @@ class PinnacleLogin():
 
     def _savedata(self):
         """save the data"""
-        sName = 'C:\\'+'pinnacle_balance' + '.txt'
+        sName = os.path()+'pinnacle_balance' + '.txt'
         try:
             f = open(sName,'w')
             for (k,v) in self.balance_sheet.items():
