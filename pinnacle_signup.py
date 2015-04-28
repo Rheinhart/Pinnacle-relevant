@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-import urllib2
-import urllib
+#import urllib2
+#import urllib
 #from pytesser import *
 import requests
-import cookielib
+#import cookielib
 import sys
 from PIL import Image
 import bs4
@@ -99,7 +99,8 @@ class PinnacleSignUp():
 
     def _getcaptcha(self):
         capr = signup_session.get(self.captcha_url,timeout=60*4)
-        with open('C:\\captcha.png', 'wb') as f:
+        captcha_path = os.getcwd()+'captcha.png'
+        with open(captcha_path, 'wb') as f:
             f.write(capr.content)
             f.close()
         signup_captcha = raw_input("Please input the captcha：")
