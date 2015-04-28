@@ -23,7 +23,16 @@ class PinnacleLogin():
         self.password = ''
         self.pinnacle_balance = ''
         self.balance_sheet = {} #result saved in this table
-        self.header = {'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+
+    def set_login_info(self,username,password):
+        '''set the user information'''
+        self.username = username
+        self.password = password
+
+    def _loginmain(self):
+        '''login the main page'''
+
+        login_header = {'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
                   'Accept-Encoding':'gzip, deflate',
                   'Accept-Language':'zh-CN,zh;q=0.8,en;q=0.6',
                   'Cache-Control':'max-age=0',
@@ -35,13 +44,7 @@ class PinnacleLogin():
                   'Referer':'https://aaa.pinnaclesports.com/Login.aspx',
                   'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.90 Safari/537.36'}
 
-    def set_login_info(self,username,password):
-        '''set the user information'''
-        self.username = username
-        self.password = password
 
-    def _loginmain(self):
-        '''login the main page'''
         postData = {'__VIEWSTATE':'/wEPDwUINDc3MzExNzIPZBYCAgMPZBYCAgEPZBYCAgMPEGQPFgECBxYBEAUEVGhhaQUCdGhnFgFmZGRevYPRLil7tSWwrGv94kOQWgS/Z/UdYWX+2Psw3JdwrQ==',
             '__VIEWSTATEGENERATOR':'C2EE9ABB',
             '__EVENTVALIDATION':'/wEdAA0XhIbGiuWL6wNXsuKKNl9+zyjSCk071VEBFi+Pn+x7Vbskj2bYtjy6x+ok0AhsxbmaWJgNYxXDKJmfHo3SUAtyDajVEjtqqAB+Fe3DJW2ReMqDhLSZLEX/ZvMqb4F5bexjIsOsOCcsfe6l6fcRigHQEAWAfkf0gHlvWmxI/1mZHAgsYlVDpoodEWRg9RRToQqwRQmdYVIGdQOw5ctONxUqR1LBKX1P1xh290RQyTesRVwK8/1gnn25OldlRNyIednDbiWC8p5oWQ9KZC32jRIUQPgwUS8va+KcSB9QJ0dkZouFlD3gerUhEyV9P/WYD/o=',
@@ -50,7 +53,7 @@ class PinnacleLogin():
             'Password': self.password,
             'LB':'Login'}
 
-        req = login_session.post(login_url, postData,headers=self.header,timeout=60*4)
+        req = login_session.post(login_url, postData,headers=login_header,timeout=60*4)
 
         try:
             content = str(req.content)
@@ -59,6 +62,19 @@ class PinnacleLogin():
 
     def _kickoff(self):
         '''kick off other user and continue'''
+
+        login_header = {'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                  'Accept-Encoding':'gzip, deflate',
+                  'Accept-Language':'zh-CN,zh;q=0.8,en;q=0.6',
+                  'Cache-Control':'max-age=0',
+                  'Connection':'keep-alive',
+                  'Content-Type':'application/x-www-form-urlencoded',
+                  'DNT':'1',
+                  'Host':'aaa.pinnaclesports.com',
+                  'Origin':'https://aaa.pinnaclesports.com',
+                  'Referer':'https://aaa.pinnaclesports.com/Login.aspx',
+                  'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.90 Safari/537.36'}
+
 
         kickoff_url = 'https://aaa.pinnaclesports.com/AlreadyLoggedIn.aspx'
 
@@ -69,7 +85,7 @@ class PinnacleLogin():
         'LPHF': self.password,
         'COB':'Continue'}
 
-        req = login_session.post(kickoff_url, postData,headers=self.header,timeout=60*4)
+        req = login_session.post(kickoff_url, postData,headers=login_header,timeout=60*4)
         try:
             self.pinnacle_balance = str(req.content)
         except  urllib2.HTTPError, e:
