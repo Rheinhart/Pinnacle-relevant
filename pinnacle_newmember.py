@@ -8,16 +8,50 @@ from PIL import Image  #handle the image
 #import urllib
 #import cookielib
 import os
-
 ######
 reload(sys)
 sys.setdefaultencoding("utf8")
 ######
-login_url = 'https://aaa.pinnaclesports.com/Login.aspx'
-pinnacle_session = requests.Session()
 
-class PinnacleLogin():
+pinnacle_session = requests.Session() #create a session
+
+class PinnacleMember():
+
+    def _init_(self):
+
+        #for creating a new Member
+        self.customer_id = '' #new member name: delegate name+member id
+        self.id_first = ''
+        self.id_second = ''
+        self.id_third = ''
+        self.password_init = ''
+        self.password_new = ''
+        self.lastname = ''
+        self.firstname = ''
+        self.credit_limit = ''
+
+    def setMemberInitPassword(self,password_init):
+        self.password_init = password_init
+
+    def setMemberNewPassowrd(self,password_new):
+        self.password_new = password_new
+
+    def setMemberName(self,firstname,lastname):
+        self.firstname = firstname
+        self.lastname = lastname
+
+    def setMemberId(self,first,second,third):
+        self.id_first = first
+        self.id_second = second
+        self.id_third = third
+
+    def setCreditLimit(self,credit_limit):
+        self.credit_limit = credit_limit
+
+
+class PinnacleLogin(PinnacleMember):
     """Automatically login the Pinnacle to get the data of Balance Sheet"""
+
     def __init__(self):
 
         self.username = ''
@@ -27,19 +61,20 @@ class PinnacleLogin():
 
         #items to post for new member, finding out in the new member page
         self.captcha_url = ''
-        self.captcha = ""
+        self.captcha = ''
         self.captcha_control = ''
-        self.unique_id = ""
-        self.view_state = ""
-        self.event_validation = ""
+        self.unique_id = ''
+        self.view_state = ''
+        self.event_validation = ''
 
-    def set_login_info(self,username,password):
+    def setlogin_info(self,username,password):
         '''set the user information'''
         self.username = username
-        self.password = password
+        self.password =  self.password_init = password
 
     def _loginmain(self):
-        '''login the main page'''
+        '''login the background main page'''
+        login_url = 'https://aaa.pinnaclesports.com/Login.aspx'
 
         login_header ={'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
                   'Accept-Encoding':'gzip, deflate',
@@ -53,7 +88,7 @@ class PinnacleLogin():
                   'Referer':'https://aaa.pinnaclesports.com/Login.aspx',
                   'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.90 Safari/537.36'}
 
-        postData = {'__VIEWSTATE':'/wEPDwUINDc3MzExNzIPZBYCAgMPZBYCAgEPZBYCAgMPEGQPFgECBxYBEAUEVGhhaQUCdGhnFgFmZGRevYPRLil7tSWwrGv94kOQWgS/Z/UdYWX+2Psw3JdwrQ==',
+        login_postData = {'__VIEWSTATE':'/wEPDwUINDc3MzExNzIPZBYCAgMPZBYCAgEPZBYCAgMPEGQPFgECBxYBEAUEVGhhaQUCdGhnFgFmZGRevYPRLil7tSWwrGv94kOQWgS/Z/UdYWX+2Psw3JdwrQ==',
             '__VIEWSTATEGENERATOR':'C2EE9ABB',
             '__EVENTVALIDATION':'/wEdAA0XhIbGiuWL6wNXsuKKNl9+zyjSCk071VEBFi+Pn+x7Vbskj2bYtjy6x+ok0AhsxbmaWJgNYxXDKJmfHo3SUAtyDajVEjtqqAB+Fe3DJW2ReMqDhLSZLEX/ZvMqb4F5bexjIsOsOCcsfe6l6fcRigHQEAWAfkf0gHlvWmxI/1mZHAgsYlVDpoodEWRg9RRToQqwRQmdYVIGdQOw5ctONxUqR1LBKX1P1xh290RQyTesRVwK8/1gnn25OldlRNyIednDbiWC8p5oWQ9KZC32jRIUQPgwUS8va+KcSB9QJ0dkZouFlD3gerUhEyV9P/WYD/o=',
             'UPBF$LDDL':'en-GB',
@@ -61,7 +96,7 @@ class PinnacleLogin():
             'Password': self.password,
             'LB':'Login'}
 
-        req = pinnacle_session.post(login_url, postData,headers=login_header,timeout=60*60)
+        req = pinnacle_session.post(login_url, login_postData,headers=login_header,timeout=60*60)
 
 
     def _kickoff(self):
@@ -125,28 +160,35 @@ class PinnacleLogin():
             print "Cannot create the file!"
 
 
-    def _getcaptchaurl(self):
+    def _getpagedata(self):
+        """get the post data and captcha url from the new member page"""
 
         url = 'https://aaa.pinnaclesports.com/Members/NewMember.aspx'
         getCode = pinnacle_session.get(url,timeout=60*60)
         str = getCode.content
 
+        #get the captcha_url
         captcha_url_post = re.findall("CaptchaHandler\.ashx\?cc=(.*)\"",str)
         self.captcha_control = captcha_url_post[0]
         self.captcha_url = 'https://aaa.pinnaclesports.com/UserControls/CaptchaApp/CaptchaHandler.ashx?cc='+captcha_url_post[0]
 
+        #get the uniqueid for postdata
         UniqueId = re.findall("ctl00\_PCPH\_UniqueId\"\svalue\=\"(.*)\"",str)
         self.unique_id = UniqueId[0]
 
+        #get the VIEWSTATE for postdata
         VIEWSTATE = re.findall("\_\_VIEWSTATE\"\svalue\=\"(.*)\"",str)
         self.view_state = VIEWSTATE[0]
 
+        #get the EVENTVALIDATION for postdata
         EVENTVALIDATION = re.findall("\_\_EVENTVALIDATION\"\svalue\=\"(.*)\"",str)
         self.event_validation = EVENTVALIDATION[0]
 
+
     def _getcaptcha(self):
 
-        self._getcaptchaurl()
+        self._getpagedata()
+
         captcha_path = os.getcwd()+'\\captcha_newmember.png'
         capr = pinnacle_session.get(self.captcha_url,timeout=60*60)
         with open(captcha_path, 'wb') as f:
@@ -154,7 +196,7 @@ class PinnacleLogin():
             f.close()
 
         captcha = Image.open(captcha_path)
-        captcha.show()
+        captcha.show() #open the captcha image
         signup_captcha = raw_input("Please input the captcha：")
         self.captcha = signup_captcha
 
@@ -163,9 +205,7 @@ class PinnacleLogin():
 
         newmember_url="https://aaa.pinnaclesports.com/Members/NewMember.aspx"
 
-        id_first = 0
-        id_second = 1
-        id_third = raw_input("Please input the the third member userid token(bcyc5x601:_) ")
+        #id_third = raw_input("Please input the the third member userid token(bcyc5x601:_) ")
 
         newmember_header = {"Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
                   "Accept-Encoding":"gzip, deflate",
@@ -186,15 +226,15 @@ class PinnacleLogin():
                     "__VIEWSTATEGENERATOR":"2B21570D",
                     "__EVENTVALIDATION":self.event_validation,
                     "ctl00$PCPH$UniqueId":self.unique_id,
-                    "ctl00$PCPH$AL1DDL":id_first,
-                    "ctl00$PCPH$AL2DDL":id_second,
-                    "ctl00$PCPH$AL3DDL":id_third,
-                    "ctl00$PCPH$PTB":"qqqq1111",
-                    "ctl00$PCPH$FNTB":"TT",
-                    "ctl00$PCPH$LNTB":"",
+                    "ctl00$PCPH$AL1DDL":self.id_first, #id
+                    "ctl00$PCPH$AL2DDL":self.id_second,
+                    "ctl00$PCPH$AL3DDL":self.id_third,
+                    "ctl00$PCPH$PTB":self.password_init,
+                    "ctl00$PCPH$FNTB":self.firstname,
+                    "ctl00$PCPH$LNTB":self.lastname,
                     "ctl00$PCPH$PHTB":"",
                     "ctl00$PCPH$MTB":"",
-                    "ctl00$PCPH$MCTB":"1000",
+                    "ctl00$PCPH$MCTB":self.credit_limit,
                     "ctl00$PCPH$OTDDL":"HongKong",
                     "ctl00$PCPH$CDDL":"Hong Kong",
                     "ctl00$PCPH$COTB":"",
@@ -487,6 +527,63 @@ class PinnacleLogin():
             #signup failure
             print 'Can not create a new Member!\n'
 
+        pinnacle_session.close()
+
+
+    def _resetpassword(self):
+        '''login from the homepage with the new member id, then to change the password'''
+        reset_session = requests.Session() #create a session
+
+        login_url = 'https://www.pinnaclesports.com/login/authenticate/Classic/en-GB'
+
+        login_header ={'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                  'Accept-Encoding':'gzip, deflate',
+                  'Accept-Language':'zh-CN,zh;q=0.8,en;q=0.6',
+                  'Cache-Control':'max-age=0',
+                  'Connection':'keep-alive',
+                  'Content-Type':'application/x-www-form-urlencoded',
+                  'DNT':'1',
+                  'Host':'www.pinnaclesports.com',
+                  'Origin':'https://www.pinnaclesports.com',
+                  'Referer':'https://www.pinnaclesports.com/',
+                  'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.90 Safari/537.36'}
+
+        self.customer_id = self.username+str(self.id_first)+str(self.id_second)+str(self.id_third)
+
+        login_postData = {'ctl00$LDDL':'2',
+                    'ctl00$PSDDL':'american',
+                    'CustomerId':self.customer_id,
+                    'Password':self.password_init,
+                    'AppId':'Classic'}
+
+        req = reset_session.post(login_url, login_postData,headers=login_header,timeout=60*60)
+
+        print req.content
+
+        #commit and next step
+        changepwd_url = 'https://www.pinnaclesports.com/login/password/ResetConfirmation/Classic/en-GB'
+
+        changepwd_postData = {'NextSteps':5,
+                              'CurrentPassword':self.password_init,
+                              'NewPassword':self.password_new,
+                              'ConfirmPassword':self.password_new}
+
+        req = reset_session.post(login_url, changepwd_postData,headers=login_header,timeout=60*60)
+
+        #continue and next step
+        changepwd_url = changepwd_url+'?customerId='+self.customer_id+'&nextSteps=5'
+        #https://www.pinnaclesports.com/login/GetNextPage/Classic/en-GB?customerId=BCYC5X6012&nextSteps=5
+        req = reset_session.get(changepwd_url)
+
+        tag = 'Last successful login'
+        if  re.search(tag,self.pinnacle_balance):
+            #login successful
+            print 'Change password successful!\n'
+        else:
+            #login failure
+            print 'Change password failed\n'
+
+
     def login(self):
 
         self._loginmain()
@@ -495,17 +592,22 @@ class PinnacleLogin():
         #self._savedata()
         self._getcaptcha()
         self._newmember()
+        self._resetpassword()
 
 
 if __name__ == '__main__':
 
     userlogin = PinnacleLogin()
-    username = ''
-    password = ''
 
-    userlogin.set_login_info(username,password)
+    userlogin.setlogin_info('','')
+
+    userlogin.setMemberId(0,1,7)#set the new member id
+    userlogin.setCreditLimit(0)
+    userlogin.setMemberName('Tao','Test')
+    userlogin.setMemberNewPassowrd('')
+
     userlogin.login()
-    pinnacle_session.close()
+
 
 
 
