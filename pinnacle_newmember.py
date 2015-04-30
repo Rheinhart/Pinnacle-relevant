@@ -4,9 +4,6 @@ import bs4
 import re
 import requests
 from PIL import Image  #handle the image
-#import urllib2
-#import urllib
-#import cookielib
 import os
 ######
 reload(sys)
@@ -70,7 +67,7 @@ class PinnacleLogin(PinnacleMember):
     def setlogin_info(self,username,password):
         '''set the user information'''
         self.username = username
-        self.password =  self.password_init = password
+        self.password = self.password_init = password
 
     def _loginmain(self):
         '''login the background main page'''
@@ -96,7 +93,7 @@ class PinnacleLogin(PinnacleMember):
             'Password': self.password,
             'LB':'Login'}
 
-        req = pinnacle_session.post(login_url, login_postData,headers=login_header,timeout=60*60)
+        req = pinnacle_session.post(login_url, login_postData,headers=login_header,timeout=60*4)
 
 
     def _kickoff(self):
@@ -123,17 +120,17 @@ class PinnacleLogin(PinnacleMember):
         'LPHF': self.password,
         'COB':'Continue'}
 
-        req = pinnacle_session.post(kickoff_url, postData,headers=login_header,timeout=60*60)
+        req = pinnacle_session.post(kickoff_url, postData,headers=login_header,timeout=60*4)
         self.pinnacle_balance = str(req.content)
 
 
         tag = 'Yesterday Total Balance'
         if  re.search(tag,self.pinnacle_balance):
             #login successful
-            print 'Logged in successfully!\n'
+            print 'Login successful!\n'
         else:
             #login failure
-            print 'Logged in failed, check result.html file for details\n'
+            print 'Login failed, please check the result.html file for details\n'
 
     def _parserpage(self):
 
@@ -164,7 +161,7 @@ class PinnacleLogin(PinnacleMember):
         """get the post data and captcha url from the new member page"""
 
         url = 'https://aaa.pinnaclesports.com/Members/NewMember.aspx'
-        getCode = pinnacle_session.get(url,timeout=60*60)
+        getCode = pinnacle_session.get(url,timeout=60*4)
         str = getCode.content
 
         #get the captcha_url
@@ -186,11 +183,12 @@ class PinnacleLogin(PinnacleMember):
 
 
     def _getcaptcha(self):
+        '''automatically download and open the captcha picture for recognization'''
 
         self._getpagedata()
 
         captcha_path = os.getcwd()+'\\captcha_newmember.png'
-        capr = pinnacle_session.get(self.captcha_url,timeout=60*60)
+        capr = pinnacle_session.get(self.captcha_url,timeout=60*4)
         with open(captcha_path, 'wb') as f:
             f.write(capr.content)
             f.close()
@@ -202,17 +200,15 @@ class PinnacleLogin(PinnacleMember):
 
 
     def _newmember(self):
+        '''Create a new member under the delegate user'''
 
         newmember_url="https://aaa.pinnaclesports.com/Members/NewMember.aspx"
-
-        #id_third = raw_input("Please input the the third member userid token(bcyc5x601:_) ")
 
         newmember_header = {"Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
                   "Accept-Encoding":"gzip, deflate",
                   "Accept-Language":"zh-CN,zh;q=0.8,en;q=0.6",
                   "Cache-Control":"max-age=0",
                   "Connection":"keep-alive",
-                  #"Content-Length":"183758",
                   "Content-Type":"application/x-www-form-urlencoded",
                   "DNT":"1",
                   "Host":"aaa.pinnaclesports.com",
@@ -226,7 +222,7 @@ class PinnacleLogin(PinnacleMember):
                     "__VIEWSTATEGENERATOR":"2B21570D",
                     "__EVENTVALIDATION":self.event_validation,
                     "ctl00$PCPH$UniqueId":self.unique_id,
-                    "ctl00$PCPH$AL1DDL":self.id_first, #id
+                    "ctl00$PCPH$AL1DDL":self.id_first, #id,first
                     "ctl00$PCPH$AL2DDL":self.id_second,
                     "ctl00$PCPH$AL3DDL":self.id_third,
                     "ctl00$PCPH$PTB":self.password_init,
@@ -516,13 +512,14 @@ class PinnacleLogin(PinnacleMember):
                     "DXScript":"1_157,1_89,1_149,1_100,1_86,1_141,1_139",
                     "DXCss":"100_95,1_9,1_11,1_4,100_97,100_241,100_243,/Members/Agent.css,/css/MembersAsianAgentAdminMaster?v=tu_PZM2apLZcVD3qdoCl-sSqyNjWxnJjSUFqvHE5ITQ1"}
 
-        req = pinnacle_session.post(newmember_url, postData,headers=newmember_header,timeout=60*60)
+        req = pinnacle_session.post(newmember_url, postData,headers=newmember_header,timeout=60*4)
 
         str = req.content
         tag = 'Last Login IP'
         if  re.search(tag,str):
             #signup successful
             print 'Create a new Member!\n'
+
         else:
             #signup failure
             print 'Can not create a new Member!\n'
@@ -531,8 +528,11 @@ class PinnacleLogin(PinnacleMember):
 
 
     def _resetpassword(self):
-        '''login from the homepage with the new member id, then to change the password'''
+        '''login from the homepage with the new member id, then change the password'''
+
         reset_session = requests.Session() #create a session
+
+        cookie_init = 'PCTR=637235794190443421; UserAccess=2; GRP=!QT9dcstfHn7HSpguFjtGspOx3359jiDO60X9GcYCLM3Sud0cVcW5WsE=; bootstraprun=no; PinMemCookie=h=687ABFEDF48066AE68529B112EB39D44&v=members.pinnaclesports.com&t=ps-mc; ASP.NET_SessionId=nmdei410wv1x3gdhopa2vuqk; UserPrefsCookie=languageId=2&priceStyle=decimal&linesTypeView=c&device=d&languageGroup=all; LastPageCookie=url=http://www.pinnaclesports.com/default.aspx&time=30/04/2015 15:24:53'
 
         login_url = 'https://www.pinnaclesports.com/login/authenticate/Classic/en-GB'
 
@@ -541,6 +541,7 @@ class PinnacleLogin(PinnacleMember):
                   'Accept-Language':'zh-CN,zh;q=0.8,en;q=0.6',
                   'Cache-Control':'max-age=0',
                   'Connection':'keep-alive',
+                  'Cookie':cookie_init,
                   'Content-Type':'application/x-www-form-urlencoded',
                   'DNT':'1',
                   'Host':'www.pinnaclesports.com',
@@ -551,36 +552,63 @@ class PinnacleLogin(PinnacleMember):
         self.customer_id = self.username+str(self.id_first)+str(self.id_second)+str(self.id_third)
 
         login_postData = {'ctl00$LDDL':'2',
-                    'ctl00$PSDDL':'american',
+                    'ctl00$PSDDL':'decimal',
                     'CustomerId':self.customer_id,
                     'Password':self.password_init,
                     'AppId':'Classic'}
 
-        req = reset_session.post(login_url, login_postData,headers=login_header,timeout=60*60)
+        req = reset_session.post(login_url, login_postData,headers=login_header,timeout=60*4)
 
-        print req.content
+        cookies ='PCTR=637235794190443421; ASP.NET_SessionId=5krztnl4wrzkr5na0art0pfq; signup_sd=id:656ea2dc-22d9-4eb1-8b17-43fba9091fc2,cps:xJNTKAjYrwePbZcLo2rQAw==; enhanced=pass; LastPageCookie=url=http://www.pinnaclesports.com/default.aspx&time=29/04/2015 17:02:38; '
+        cookies = cookies+'custid='+reset_session.cookies['custid']+'; '+'UserPrefsCookie='+reset_session.cookies['UserPrefsCookie']+'; '+'UserAccess='+reset_session.cookies['UserAccess']+'; '+'GRP='+reset_session.cookies['GRP']+'; '+'bootstraprun='+reset_session.cookies['bootstraprun']+'; '+'PinMemCookie='+reset_session.cookies['PinMemCookie']+'; '+'ADRUM_BT='+reset_session.cookies['ADRUM_BT']
+
+
+        tag = 'Login unsuccessful'
+        if  re.search(tag,req.content):
+            #login successful
+            print 'Login unsuccessful!\n'
+        else:
+            pass
 
         #commit and next step
         changepwd_url = 'https://www.pinnaclesports.com/login/password/ResetConfirmation/Classic/en-GB'
 
-        changepwd_postData = {'NextSteps':5,
+        header ={'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                  'Accept-Encoding':'gzip, deflate',
+                  'Accept-Language':'zh-CN,zh;q=0.8,en;q=0.6',
+                  'Connection':'keep-alive',
+                  'Cookie':cookies,
+                  'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8',
+                  'DNT':'1',
+                  'Host':'www.pinnaclesports.com',
+                  'Origin':'https://www.pinnaclesports.com',
+                  'Referer':'https://www.pinnaclesports.com/login/password/ResetConfirmation/Classic/en-GB',
+                  'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.90 Safari/537.36',
+                  'X-Requested-With':'XMLHttpRequest'}
+
+
+        postData = {'NextSteps':'',
                               'CurrentPassword':self.password_init,
                               'NewPassword':self.password_new,
                               'ConfirmPassword':self.password_new}
 
-        req = reset_session.post(login_url, changepwd_postData,headers=login_header,timeout=60*60)
+        req = reset_session.post(changepwd_url, postData,headers=header,timeout=60*4)
 
-        #continue and next step
-        changepwd_url = changepwd_url+'?customerId='+self.customer_id+'&nextSteps=5'
-        #https://www.pinnaclesports.com/login/GetNextPage/Classic/en-GB?customerId=BCYC5X6012&nextSteps=5
+        tag = 'Saved successfully'
+        if  re.search(tag,req.content):
+            print 'Change password successful!\n'+'You have created a new Member: '+self.customer_id+', Credit Limit: '+str(self.credit_limit)
+            pass
+        else:
+            print 'Reset Password unsuccessful!\n'
+
+        #continue and last step
+        changepwd_url = changepwd_url+'?customerId='+self.customer_id+'&nextSteps=5&IsAjaxRequest=True'
         req = reset_session.get(changepwd_url)
 
-        tag = 'Last successful login'
-        if  re.search(tag,self.pinnacle_balance):
-            #login successful
-            print 'Change password successful!\n'
+        tag = 'Reset Password'
+        if  re.search(tag,req.content):
+            pass
         else:
-            #login failure
             print 'Change password failed\n'
 
 
@@ -588,27 +616,25 @@ class PinnacleLogin(PinnacleMember):
 
         self._loginmain()
         self._kickoff()
-        #self._parserpage()
-        #self._savedata()
+        #self._parserpage()# parser the member list page
+        #self._savedata() # save the member list
         self._getcaptcha()
         self._newmember()
-        self._resetpassword()
+        self._resetpassword()# reset the password
 
 
 if __name__ == '__main__':
 
     userlogin = PinnacleLogin()
+    delegate_username = ''
+    delegate_password = ''
 
-    userlogin.setlogin_info('','')
-
-    userlogin.setMemberId(0,1,7)#set the new member id
-    userlogin.setCreditLimit(0)
-    userlogin.setMemberName('Tao','Test')
-    userlogin.setMemberNewPassowrd('')
+    userlogin.setlogin_info(delegate_username,delegate_password) # background login
+    userlogin.setMemberId(0,0,'F')#set the last three numbers or alphabets of the memberID
+    userlogin.setCreditLimit(0) #set the credit limit
+    userlogin.setMemberName('T','Test')#set the firstname and lastname
+    userlogin.setMemberNewPassowrd('')#set the new password
 
     userlogin.login()
-
-
-
 
 
