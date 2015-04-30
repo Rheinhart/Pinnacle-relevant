@@ -13,6 +13,7 @@ sys.setdefaultencoding("utf8")
 pinnacle_session = requests.Session()#create a session
 
 class PinnacleMember():
+    '''new member data'''
 
     def _init_(self):
 
@@ -47,7 +48,7 @@ class PinnacleMember():
 
 
 class PinnacleLogin(PinnacleMember):
-    """Automatically login the Pinnacle to get the data of Balance Sheet"""
+    """Automatically login the Pinnacle.com to get the data of Balance Sheet"""
 
     def __init__(self):
 
@@ -573,7 +574,7 @@ class PinnacleLogin(PinnacleMember):
         #commit and next step
         changepwd_url = 'https://www.pinnaclesports.com/login/password/ResetConfirmation/Classic/en-GB'
 
-        header ={'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        changepwd_header ={'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
                   'Accept-Encoding':'gzip, deflate',
                   'Accept-Language':'zh-CN,zh;q=0.8,en;q=0.6',
                   'Connection':'keep-alive',
@@ -587,12 +588,12 @@ class PinnacleLogin(PinnacleMember):
                   'X-Requested-With':'XMLHttpRequest'}
 
 
-        postData = {'NextSteps':'',
+        change_postData = {'NextSteps':'',
                               'CurrentPassword':self.password_init,
                               'NewPassword':self.password_new,
                               'ConfirmPassword':self.password_new}
 
-        req = reset_session.post(changepwd_url, postData,headers=header,timeout=60*4)
+        req = reset_session.post(changepwd_url, change_postData,headers=changepwd_header,timeout=60*4)
 
         tag = 'Saved successfully'
         if  re.search(tag,req.content):
