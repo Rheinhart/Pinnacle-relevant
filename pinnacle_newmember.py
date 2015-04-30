@@ -10,7 +10,7 @@ reload(sys)
 sys.setdefaultencoding("utf8")
 ######
 
-pinnacle_session = requests.Session() #create a session
+pinnacle_session = requests.Session()#create a session
 
 class PinnacleMember():
 
