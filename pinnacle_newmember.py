@@ -560,8 +560,8 @@ class PinnacleLogin(PinnacleMember):
 
         req = reset_session.post(login_url, login_postData,headers=login_header,timeout=60*4)
 
-        cookies ='PCTR=637235794190443421; ASP.NET_SessionId=5krztnl4wrzkr5na0art0pfq; signup_sd=id:656ea2dc-22d9-4eb1-8b17-43fba9091fc2,cps:xJNTKAjYrwePbZcLo2rQAw==; enhanced=pass; LastPageCookie=url=http://www.pinnaclesports.com/default.aspx&time=29/04/2015 17:02:38; '
-        cookies = cookies+'custid='+reset_session.cookies['custid']+'; '+'UserPrefsCookie='+reset_session.cookies['UserPrefsCookie']+'; '+'UserAccess='+reset_session.cookies['UserAccess']+'; '+'GRP='+reset_session.cookies['GRP']+'; '+'bootstraprun='+reset_session.cookies['bootstraprun']+'; '+'PinMemCookie='+reset_session.cookies['PinMemCookie']+'; '+'ADRUM_BT='+reset_session.cookies['ADRUM_BT']
+        #cookies ='PCTR=637235794190443421; ASP.NET_SessionId=5krztnl4wrzkr5na0art0pfq; signup_sd=id:656ea2dc-22d9-4eb1-8b17-43fba9091fc2,cps:xJNTKAjYrwePbZcLo2rQAw==; enhanced=pass; LastPageCookie=url=http://www.pinnaclesports.com/default.aspx&time=29/04/2015 17:02:38; '
+        #cookies = cookies+'custid='+reset_session.cookies['custid']+'; '+'UserPrefsCookie='+reset_session.cookies['UserPrefsCookie']+'; '+'UserAccess='+reset_session.cookies['UserAccess']+'; '+'GRP='+reset_session.cookies['GRP']+'; '+'bootstraprun='+reset_session.cookies['bootstraprun']+'; '+'PinMemCookie='+reset_session.cookies['PinMemCookie']+'; '+'ADRUM_BT='+reset_session.cookies['ADRUM_BT']
 
 
         tag = 'Login unsuccessful'
@@ -578,7 +578,7 @@ class PinnacleLogin(PinnacleMember):
                   'Accept-Encoding':'gzip, deflate',
                   'Accept-Language':'zh-CN,zh;q=0.8,en;q=0.6',
                   'Connection':'keep-alive',
-                  'Cookie':cookies,
+                  #'Cookie':cookies,
                   'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8',
                   'DNT':'1',
                   'Host':'www.pinnaclesports.com',
