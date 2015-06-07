@@ -4,7 +4,7 @@ import re
 import requests
 import os
 import time
-
+import datetime
 ######
 reload(sys)
 ######
@@ -14,14 +14,12 @@ log_path = sys.path[0]+'\\logs\\'
 
 class Pinnacle():
     """Automatically login the Pinnacle to get the data of Balance Sheet"""
-    def __init__(self,refresh=300):
+    def __init__(self,refresh=30):
 
         self.username = ''
         self.password = ''
         self.isLogin = False
         self.refreshTime = refresh
-        #self.pinnacle_balance = ''
-        #self.balance_sheet = {} #result saved in this table
 
     def setInfo(self,username,password):
         '''set the user information'''
@@ -127,18 +125,24 @@ class Pinnacle():
             #print str(ticketinfo.content)
             tagIsTicket='Trans\.'
             tagHasNo = 'No data to display'
+            tagReject ='Rejected'
             isticket=re.findall(tagIsTicket,ticketinfo.content)
             if isticket:
                 hasNo=re.findall(tagHasNo,ticketinfo.content)
+                hasRejected=re.findall(tagReject,ticketinfo.content)
                 if hasNo:
                       print 'no ticket'
                       return 2
                 else:
-                    print str(ticket)+' is successful!'
-                    return 1
+                    if hasRejected:
+                        print str(ticket)+' has been rejected!'
+                        return 3
+                    else:
+                        print str(ticket)+' is successful!'
+                        return 1
             else:
                 print 'not Pinnacle\'s ticket'
-                return 3
+                return 4
         except Exception, e:
             print e
             return False
@@ -152,8 +156,9 @@ class Pinnacle():
         TICKET = '\xb5\xa5\xba\xc5:' #ticket id line[3]
         #self.login_name = '' #line[6]
 
-        logfile=log_path+logname
-        newlogfile = re.findall(r'(.*)\.log',logname)[0]+'m.log'
+        logfile=log_path+logname+'.log'
+       #newlogfile = re.findall(r'(.*)\.log',logname)[0]+'m.log'
+        newlogfile =logname+'m.log'
         newlog = log_path+str(newlogfile)
 
         if self.isLogin is True:
@@ -171,7 +176,7 @@ class Pinnacle():
                             checkT=self._findticket(ticket)
                             if checkT == 1:
                                 line[4]=line[4].replace(STATUS_WAITING,STATUS_SUCCESS)
-                            elif checkT == 2:
+                            elif checkT == 3:
                                 line[4]=line[4].replace(STATUS_WAITING,STATUS_REJECT)
                             else:
                                 pass
@@ -197,23 +202,23 @@ class Pinnacle():
     def logModify(self):
 
         self._loginmain()
-        self._kickoff()
+        r=self._kickoff()
 
-        loglist=self._loglist()
-
-        try:
-            for log in loglist:
-                if 'm' not in log:
-                    print 'modifying:'+log
-                    self._logcheck(log)
-            return True
-
-        except:
-            return False
-
+        #loglist=self._loglist()
+        data = datetime.date.today().strftime("%Y-%m-%d")
+        log = data
+        if r:
+            try:
+                #for log in loglist:
+                    #if 'm' not in log:
+                print 'modifying:'+log
+                self._logcheck(log)
+                return True
+            except:
+                return False
 
     def logRefresh(self):
-        while 1:
+        while True:
             r=self.logModify()
             if not r:
                 print 'log Modify fail!'
@@ -228,9 +233,3 @@ if __name__ == '__main__':
 
     pinnacle.setInfo(username,password)
     pinnacle.logRefresh()
-
-
-
-
-
-
